@@ -10,6 +10,9 @@
 package prototype;
 
 import javax.swing.JOptionPane;
+import javax.swing.JList;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 public class SessionList extends javax.swing.JFrame {
 
@@ -31,114 +34,109 @@ public class SessionList extends javax.swing.JFrame {
 
         sessions = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        canAccessLabel = new javax.swing.JLabel();
-        readAccessLabel = new javax.swing.JLabel();
-        editingAcessLabel = new javax.swing.JLabel();
-        fullAcessLabel = new javax.swing.JLabel();
-        companyDocuments = new javax.swing.JLabel();
-        testDocuments = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
+        listPanel = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        sessionList = new javax.swing.JList();
+        cancelButton = new javax.swing.JButton();
+        okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(352, 320));
 
         sessions.setText("Sessions");
 
-        canAccessLabel.setForeground(new java.awt.Color(252, 11, 11));
-        canAccessLabel.setText("No access");
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel1.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(412, 282, -1, 10));
+        jPanel1.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(412, 0, -1, 10));
 
-        readAccessLabel.setForeground(new java.awt.Color(250, 101, 7));
-        readAccessLabel.setText("Read Access");
+        sessionList.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Company Documents", "User Documents"};
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(sessionList);
 
-        editingAcessLabel.setForeground(new java.awt.Color(0, 9, 255));
-        editingAcessLabel.setText("Editing access");
-
-        fullAcessLabel.setForeground(new java.awt.Color(5, 255, 0));
-        fullAcessLabel.setText("Full access");
-
-        companyDocuments.setForeground(new java.awt.Color(255, 0, 0));
-        companyDocuments.setText("Company Documents");
-        companyDocuments.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                companyDocumentsMousePressed(evt);
+        cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelButtonActionPerformed(evt);
             }
         });
 
-        testDocuments.setForeground(new java.awt.Color(30, 255, 0));
-        testDocuments.setText("Test Document");
-        testDocuments.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                testDocumentsMousePressed(evt);
+        okButton.setText("Select");
+        okButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                okButtonActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout listPanelLayout = new javax.swing.GroupLayout(listPanel);
+        listPanel.setLayout(listPanelLayout);
+        listPanelLayout.setHorizontalGroup(
+            listPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(listPanelLayout.createSequentialGroup()
+                .addGroup(listPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(listPanelLayout.createSequentialGroup()
+                        .addComponent(cancelButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(okButton))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+        listPanelLayout.setVerticalGroup(
+            listPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(listPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(canAccessLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(readAccessLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(editingAcessLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fullAcessLabel))
-                    .addComponent(companyDocuments)
-                    .addComponent(testDocuments))
-                .addContainerGap())
-            .addComponent(jSeparator1)
-            .addComponent(jSeparator2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(listPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cancelButton)
+                    .addComponent(okButton))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(companyDocuments)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(testDocuments)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 179, Short.MAX_VALUE)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(canAccessLabel)
-                    .addComponent(readAccessLabel)
-                    .addComponent(editingAcessLabel)
-                    .addComponent(fullAcessLabel))
-                .addGap(22, 22, 22))
-        );
+
+        jPanel1.add(listPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 0, 240, 200));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(sessions)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(sessions)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(sessions)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void companyDocumentsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_companyDocumentsMousePressed
-        javax.swing.JOptionPane.showMessageDialog(this, "You do not have sufficient access to read this document", "No access",JOptionPane.ERROR_MESSAGE);
-    }//GEN-LAST:event_companyDocumentsMousePressed
+    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+        String  selectedValue = (String)sessionList.getSelectedValue();
+        if(!selectedValue.isEmpty())
+        {
+            if(selectedValue.equals("Company Documents"))
+            {
+                JOptionPane.showMessageDialog(this, "Sorry you cannot open this document", "Cannot Open", JOptionPane.PLAIN_MESSAGE);
+            }
+            else
+            {
+                this.setVisible(false);
+                parent.handleSessionSelection(selectedValue);
+            }
+        }
+    }//GEN-LAST:event_okButtonActionPerformed
 
-    private void testDocumentsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_testDocumentsMousePressed
-        
-    }//GEN-LAST:event_testDocumentsMousePressed
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+        this.setVisible(false);        // TODO add your handling code here:
+    }//GEN-LAST:event_cancelButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -174,16 +172,21 @@ public class SessionList extends javax.swing.JFrame {
             }
         });
     }
+    
+    public void setParent(MainWindow theParent)
+    {
+        parent = theParent;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel canAccessLabel;
-    private javax.swing.JLabel companyDocuments;
-    private javax.swing.JLabel editingAcessLabel;
-    private javax.swing.JLabel fullAcessLabel;
+    private javax.swing.JButton cancelButton;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JLabel readAccessLabel;
+    private javax.swing.JPanel listPanel;
+    private javax.swing.JButton okButton;
+    private javax.swing.JList sessionList;
     private javax.swing.JLabel sessions;
-    private javax.swing.JLabel testDocuments;
     // End of variables declaration//GEN-END:variables
+    private MainWindow parent;
 }

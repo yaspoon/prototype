@@ -8,7 +8,10 @@ import java.awt.Color;
 import java.awt.Image;
 import java.io.IOException;
 import javax.swing.ImageIcon;
-
+import javax.swing.JTextArea;
+import javax.swing.JLabel;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 /**
  *
  * @author brock
@@ -22,9 +25,20 @@ public class MainWindow extends javax.swing.JFrame {
      private boolean loggedIn = false;
      private boolean createSession = false;
      private prototype.SessionList currentSessionList;
+     private JLabel[] annotations;
+     private int numAnnotations;
+     private javax.swing.DefaultListModel listModel;
+     private int x;
+     private int y;
      
     public MainWindow() {
         currentSessionList = new SessionList();
+        listModel = new DefaultListModel();
+        annotations = new JLabel[32];
+        x = 50;
+        y = 50;
+        numAnnotations = 0;
+        
         initComponents();
         
     }
@@ -61,6 +75,9 @@ public class MainWindow extends javax.swing.JFrame {
         createSessionBtn = new javax.swing.JButton();
         activityLogPanel = new javax.swing.JPanel();
         activityLog = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        activityList = new javax.swing.JList(listModel);
+        undoActivity = new javax.swing.JButton();
         boardActivityLogSeperator = new javax.swing.JSeparator();
         membersBoardSeperator = new javax.swing.JSeparator();
         jPanel1 = new javax.swing.JPanel();
@@ -79,13 +96,13 @@ public class MainWindow extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
+        annotateButton = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
         jButton11 = new javax.swing.JButton();
         jSeparator6 = new javax.swing.JSeparator();
         jTextField1 = new javax.swing.JTextField();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollBar2 = new javax.swing.JScrollBar();
+        jScrollBar1 = new javax.swing.JScrollBar();
+        pdfDisplay = new javax.swing.JLayeredPane();
         pdfPanel = new javax.swing.JLabel();
         topMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
@@ -143,6 +160,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("MainWindow"); // NOI18N
+        setResizable(false);
 
         members.setText("Members");
 
@@ -179,19 +197,39 @@ public class MainWindow extends javax.swing.JFrame {
 
         activityLog.setText("Activity Log");
 
+        jScrollPane1.setViewportView(activityList);
+
+        undoActivity.setText("Undo Activity");
+        undoActivity.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                undoActivityActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout activityLogPanelLayout = new javax.swing.GroupLayout(activityLogPanel);
         activityLogPanel.setLayout(activityLogPanelLayout);
         activityLogPanelLayout.setHorizontalGroup(
             activityLogPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(activityLogPanelLayout.createSequentialGroup()
                 .addComponent(activityLog)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 110, Short.MAX_VALUE))
+            .addGroup(activityLogPanelLayout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(activityLogPanelLayout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addComponent(undoActivity)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         activityLogPanelLayout.setVerticalGroup(
             activityLogPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(activityLogPanelLayout.createSequentialGroup()
                 .addComponent(activityLog)
-                .addGap(0, 200, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(undoActivity)
+                .addGap(81, 81, 81))
         );
 
         javax.swing.GroupLayout boardAndActivityLogLayout = new javax.swing.GroupLayout(boardAndActivityLog);
@@ -204,7 +242,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(boardAndActivityLogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(createSessionBtn)
                     .addComponent(joinSessionBtn))
-                .addContainerGap())
+                .addContainerGap(13, Short.MAX_VALUE))
             .addGroup(boardAndActivityLogLayout.createSequentialGroup()
                 .addComponent(board)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -226,8 +264,8 @@ public class MainWindow extends javax.swing.JFrame {
                 .addComponent(createSessionBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(boardActivityLogSeperator, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
-                .addComponent(activityLogPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(activityLogPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -290,8 +328,8 @@ public class MainWindow extends javax.swing.JFrame {
         leftSidePanelLayout.setVerticalGroup(
             leftSidePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, leftSidePanelLayout.createSequentialGroup()
-                .addGap(0, 11, Short.MAX_VALUE)
-                .addComponent(bookmarksLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 547, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(bookmarksLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 596, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/folder_open_16.png"))); // NOI18N
@@ -302,65 +340,55 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/document_save.png"))); // NOI18N
+        jButton2.setEnabled(false);
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/document_save_as.png"))); // NOI18N
+        jButton3.setEnabled(false);
 
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/printer.png"))); // NOI18N
+        jButton4.setEnabled(false);
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/mail.png"))); // NOI18N
+        jButton5.setEnabled(false);
 
         jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/view_fullscreen.png"))); // NOI18N
+        jButton6.setEnabled(false);
 
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/hand.png"))); // NOI18N
+        jButton7.setEnabled(false);
 
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/cursor.png"))); // NOI18N
+        jButton8.setEnabled(false);
 
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/chat_bubble.png"))); // NOI18N
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
+        annotateButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/chat_bubble.png"))); // NOI18N
+        annotateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
+                annotateButtonActionPerformed(evt);
             }
         });
 
         jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/highlight.png"))); // NOI18N
+        jButton10.setEnabled(false);
 
         jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/search.png"))); // NOI18N
+        jButton11.setEnabled(false);
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
 
         jSeparator6.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         jTextField1.setText("search");
+        jTextField1.setEnabled(false);
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 255)));
-        jPanel3.setMinimumSize(new java.awt.Dimension(646, 581));
-
-        jScrollBar2.setPreferredSize(new java.awt.Dimension(17, 530));
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pdfPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 605, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pdfPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 558, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(jScrollBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 548, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
+        pdfPanel.setBounds(0, 0, 650, 550);
+        pdfDisplay.add(pdfPanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         fileMenu.setText("File");
 
@@ -378,19 +406,27 @@ public class MainWindow extends javax.swing.JFrame {
 
         undoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
         undoMenuItem.setText("Undo");
+        undoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                undoMenuItemActionPerformed(evt);
+            }
+        });
         editMenu.add(undoMenuItem);
 
         redoMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
         redoMenuItem.setText("Redo");
+        redoMenuItem.setEnabled(false);
         editMenu.add(redoMenuItem);
 
         cutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
         cutMenuItem.setText("Cut");
+        cutMenuItem.setEnabled(false);
         editMenu.add(cutMenuItem);
 
         copyMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
         copyMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/prototype/icons/copy.png"))); // NOI18N
         copyMenuItem.setText("Copy");
+        copyMenuItem.setEnabled(false);
         copyMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 copyMenuItemActionPerformed(evt);
@@ -400,10 +436,13 @@ public class MainWindow extends javax.swing.JFrame {
 
         pasteMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
         pasteMenuItem.setText("Paste");
+        pasteMenuItem.setEnabled(false);
+        pasteMenuItem.setRequestFocusEnabled(false);
         editMenu.add(pasteMenuItem);
 
         deleteMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
         deleteMenuItem.setText("Delete");
+        deleteMenuItem.setEnabled(false);
         deleteMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteMenuItemActionPerformed(evt);
@@ -436,9 +475,11 @@ public class MainWindow extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(leftSidePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(4, 4, 4)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pdfDisplay)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
                 .addComponent(rightHandContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -466,14 +507,14 @@ public class MainWindow extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(annotateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(14, 14, 14)
                         .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 178, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -484,7 +525,7 @@ public class MainWindow extends javax.swing.JFrame {
                             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton11)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(annotateButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -512,7 +553,8 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(leftSidePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(12, 12, 12)))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 560, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pdfDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 558, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -544,7 +586,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_joinSessionBtnActionPerformed
 
     private void createSessionBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createSessionBtnActionPerformed
-
+            displayOpenPDF();
     }//GEN-LAST:event_createSessionBtnActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
@@ -609,15 +651,90 @@ public class MainWindow extends javax.swing.JFrame {
 
     
     //ANNOTATE BUTTON 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        if((fileOpen == true) && (annotatedWindow == false))
+    private void annotateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_annotateButtonActionPerformed
+        /*JLabel test = new JLabel("heros");
+        test.setBounds(340, 150, 90, 21);
+        pdfDisplay.add(test, javax.swing.JLayeredPane.PALETTE_LAYER);*/
+        if(fileOpen == true)
         {
-            pdf = new ImageIcon("PDFanno.png");
+            //pdf = new ImageIcon("PDFanno.png");
             pdfPanel.setIcon(pdf);
             annotatedWindow=true;
+            
+            if(numAnnotations < 32)
+            {
+                listModel.addElement("Annotation"+numAnnotations);
+                JLabel temp = new JLabel("Annotation" + numAnnotations);
+                temp.setName("Annotation" + numAnnotations);
+                temp.setVisible(true);
+                temp.setBounds( x, y, 90, 21);
+                
+                if( (x + 95) > 600 )
+                {
+                    x = 10;
+                }
+                else
+                {
+                    x = x + 95;
+                }
+                
+                if( (y + 30) > 530 )
+                {
+                    y = 30;
+                }
+                else
+                {
+                    y = y + 30;
+                }
+                annotations[numAnnotations] = temp;
+                pdfDisplay.add(annotations[numAnnotations], javax.swing.JLayeredPane.PALETTE_LAYER);
+      
+                numAnnotations++;
+            }
         }
-    }//GEN-LAST:event_jButton9ActionPerformed
+    }//GEN-LAST:event_annotateButtonActionPerformed
 
+    private void undoActivityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoActivityActionPerformed
+           handleUndo();
+    }//GEN-LAST:event_undoActivityActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+         // TODO add your handling code here:
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void undoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoMenuItemActionPerformed
+        if(numAnnotations != 0)
+        {
+           numAnnotations = numAnnotations - 1;
+           annotations[numAnnotations].setVisible(false);
+           listModel.remove(listModel.getSize()-1);
+        }
+    }//GEN-LAST:event_undoMenuItemActionPerformed
+
+    private void handleUndo()
+    {
+        String temp = (String)activityList.getSelectedValue();
+        if(temp != null)
+        {
+            if(!temp.isEmpty())
+            {
+                listModel.remove(activityList.getSelectedIndex());
+                annotatedWindow = false;
+                for(int i = 0; i < numAnnotations;i++)
+                {
+                    String name = annotations[i].getName();
+                    if(name.equals(temp))
+                    {
+                        annotations[i].setVisible(false);
+                        numAnnotations = numAnnotations - 1;
+                    }
+                }
+                //pdf = new ImageIcon("PDFnoanno.png");
+                //pdfPanel.setIcon(pdf);
+            }
+        }
+    }      
+           
     private boolean login()
     {
         if(!loggedIn)
@@ -635,6 +752,25 @@ public class MainWindow extends javax.swing.JFrame {
     private void showSessionList()
     {
        currentSessionList.setVisible(true); 
+       currentSessionList.setParent(this);
+
+    }
+    
+    public void handleSessionSelection(String selectedSession)
+    {
+        if(fileOpen == false)
+        {
+            pdf = new ImageIcon("PDFnoanno.png");
+            pdfPanel.setIcon(pdf);
+            
+            fileOpen = true;
+            annotatedWindow = false;
+        }       
+    }
+    
+    private void showStub()
+    {
+        JOptionPane.showMessageDialog(rootPane, "This function is not implemented in this prototype");
     }
     
     private void displayOpenPDF()
@@ -689,8 +825,10 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JList activityList;
     private javax.swing.JLabel activityLog;
     private javax.swing.JPanel activityLogPanel;
+    private javax.swing.JButton annotateButton;
     private javax.swing.JLabel board;
     private javax.swing.JSeparator boardActivityLogSeperator;
     private javax.swing.JPanel boardAndActivityLog;
@@ -716,13 +854,12 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollBar jScrollBar2;
+    private javax.swing.JScrollBar jScrollBar1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -741,6 +878,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel passwordErrorLabel;
     private javax.swing.JPasswordField passwordTextField;
     private javax.swing.JMenuItem pasteMenuItem;
+    private javax.swing.JLayeredPane pdfDisplay;
     private javax.swing.JLabel pdfPanel;
     private javax.swing.JMenuItem quitMenuItem;
     private javax.swing.JMenuItem redoMenuItem;
@@ -748,6 +886,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel sessionControlLabel;
     private javax.swing.JMenu toolMenu;
     private javax.swing.JMenuBar topMenuBar;
+    private javax.swing.JButton undoActivity;
     private javax.swing.JMenuItem undoMenuItem;
     private javax.swing.JLabel usernameIncorrectIcon;
     private javax.swing.JLabel usernameLabel;
